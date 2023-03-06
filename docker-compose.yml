@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  aws.local.example.api:
+    image: ${DOCKER_REGISTRY-}awslocalexampleapi
+    build:
+      context: .
+      dockerfile: Aws.Local.Example.Api/Dockerfile
