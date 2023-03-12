@@ -1,8 +1,34 @@
-version: '3.4'
+version: '3.8'
 
 services:
+ 
+  localstack:
+    container_name: ${DOCKER_REGISTRY-}localstack_main
+    image: localstack/localstack:latest
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      - DEBUG=${DEBUG-}
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - EXTRA_CORS_ALLOWED_ORIGINS=https://app.localstack.cloud.
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
   aws.local.example.api:
+    depends_on: 
+        - localstack
     image: ${DOCKER_REGISTRY-}awslocalexampleapi
     build:
       context: .
       dockerfile: Aws.Local.Example.Api/Dockerfile
+    environment:
+        - AWS_ACCESS_KEY_ID=localstack
+        - AWS_SECRET_ACCESS_KEY=localstack
+        - AWS_DEFAULT_REGION=eu-west-2
+        - AWS_SERVICEURL=http://${DOCKER_REGISTRY-}localstack_main:4566
+    ports:
+        - "5000:80"
+        - "5001:443"
