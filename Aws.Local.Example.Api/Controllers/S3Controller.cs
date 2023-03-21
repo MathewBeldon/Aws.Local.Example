@@ -66,7 +66,7 @@ namespace Aws.Local.Example.Api.Controllers
         }
 
         [HttpGet("bucket/{bucketName}/{key}")]
-        public async Task<IActionResult> AddItemToBucket([FromRoute] string bucketName, [FromRoute] string key, CancellationToken cancellationToken)
+        public async Task<IActionResult> GeneratePresignedUrl([FromRoute] string bucketName, [FromRoute] string key, CancellationToken cancellationToken)
         {
             var bucketExists = await _amazonS3.DoesS3BucketExistAsync(bucketName);
 
